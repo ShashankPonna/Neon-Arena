@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADS Game — Neon Arena</title>
+  <meta name="description" content="A 2D neon-themed browser game with BFS pathfinding, built with the Canvas API." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="game-wrapper">
+    <header id="hud">
+      <div class="hud-left">
+        <h1 class="game-title">NEON <span class="accent">ARENA</span></h1>
+        <span id="health-display" class="hud-health">♥♥♥♥♥</span>
+      </div>
+      <div class="hud-stats">
+        <span id="fps-counter">FPS: 0</span>
+        <span id="pos-display">X: 0 &nbsp; Y: 0</span>
+        <span class="hud-score">SCORE: <span id="score-display">0</span></span>
+        <span class="hud-enemies">ENEMIES: <span id="enemy-count">0</span></span>
+      </div>
+    </header>
+
+    <div id="canvas-area">
+      <canvas id="game-canvas"></canvas>
+      <aside id="debug-panel">
+        <h2 class="debug-title">DEBUG</h2>
+        <div class="debug-row">
+          <span class="debug-label">PQ Size</span>
+          <span class="debug-value" id="queue-size">0</span>
+        </div>
+        <div class="debug-row">
+          <span class="debug-label">Top Priority</span>
+          <span class="debug-value debug-priority" id="top-priorities">—</span>
+        </div>
+        <div class="debug-row">
+          <span class="debug-label">Spawn Rate</span>
+          <span class="debug-value" id="spawn-rate">2.0s</span>
+        </div>
+        <div class="debug-row">
+          <span class="debug-label">Enemy Speed</span>
+          <span class="debug-value">45–75</span>
+        </div>
+        <div class="debug-row">
+          <span class="debug-label">Grid</span>
+          <span class="debug-value">20×12</span>
+        </div>
+        <div class="debug-row">
+          <span class="debug-label">Algorithm</span>
+          <span class="debug-value debug-algo">BFS + Heap</span>
+        </div>
+        <div class="debug-divider"></div>
+        <div class="debug-row">
+          <span class="debug-label">Inventory</span>
+          <span class="debug-value debug-stack" id="stack-size">0</span>
+        </div>
+        <button id="btn-show-path" class="btn-toggle">◻ Show Path</button>
+      </aside>
+
+      <!-- Overlay Screens -->
+      <div id="start-screen-modal" class="ui-screen">
+        <div class="screen-content">
+          <h1 class="hero-title">NEON <span class="accent">ARENA</span></h1>
+          <p class="hero-subtitle">Survive the geometrical onslaught.</p>
+          <div class="pulse-text" id="btn-start-game">PRESS ENTER TO START</div>
+        </div>
+      </div>
+
+      <div id="game-over-modal" class="ui-screen hidden">
+        <div class="screen-content">
+          <h1 class="hero-title hero-error">SYSTEM FAILURE</h1>
+          <div class="stats-box">
+            <div class="stat-row">FINAL SCORE: <span id="go-score" class="accent">0</span></div>
+            <div class="stat-row">SURVIVED: <span id="go-time">0</span>s</div>
+          </div>
+          <div class="pulse-text" id="btn-restart-game">PRESS R TO REBOOT</div>
+        </div>
+      </div>
+
+      <!-- Skill Tree Modal -->
+      <div id="skill-tree-modal" class="hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>UPGRADE SYSTEM</h2>
+            <div class="modal-score">SCORE: <span id="st-current-score">0</span></div>
+            <span class="modal-close" id="btn-close-skills">×</span>
+          </div>
+          <div class="modal-subtitle">Click nodes to unlock. Parent nodes must be unlocked first.</div>
+          <div id="tree-container" class="tree-container">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Panel (Linked List) -->
+    <div id="inventory-panel">
+      <div class="inv-header">
+        <span class="inv-title">INVENTORY</span>
+        <span class="inv-struct">Linked List</span>
+        <span class="inv-count" id="inv-count">0 items</span>
+      </div>
+      <div class="inv-slots" id="inv-slots">
+        <span class="inv-empty">Empty — collect items on the field</span>
+      </div>
+      <div class="inv-hint">Q — Drop last item &nbsp;|&nbsp; Auto-use: walk over items</div>
+    </div>
+
+    <footer id="controls-hint">
+      <span>▲ ▼ ◀ ▶ Move &nbsp;&nbsp; E Power-Up &nbsp;&nbsp; Q Drop Item &nbsp;&nbsp; T Skill Tree &nbsp;&nbsp; ESC/P Pause &nbsp;&nbsp; R Restart</span>
+    </footer>
+  </div>
+
+  <script src="game.js" type="module"></script>
+</body>
+</html>
