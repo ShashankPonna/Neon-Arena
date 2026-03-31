@@ -95,9 +95,23 @@ function init() {
     itemManager.dropLastItem();
   });
 
+  const dsVisControls = document.getElementById('dsvis-controls');
+  const btnDsPause = document.getElementById('btn-dsvis-pause');
+
   input.onDSVis(() => {
     dsVis.toggle();
+    if (dsVisControls) {
+      if (dsVis.enabled) dsVisControls.classList.remove('hidden');
+      else dsVisControls.classList.add('hidden');
+    }
   });
+
+  if (btnDsPause) {
+    btnDsPause.addEventListener('click', () => {
+      if (state.get('flags', 'gameOver')) return;
+      loop.togglePause();
+    });
+  }
 
   input.onUseHealth(() => {
     if (state.get('flags', 'gameOver') || loop.paused) return;
@@ -450,6 +464,28 @@ function onFrame(fps, paused) {
       state.get('player', 'healthStock'),
       state.get('player', 'starStock')
     );
+  }
+
+  const btnDsPause = document.getElementById('btn-dsvis-pause');
+  const dsVisControls = document.getElementById('dsvis-controls');
+  if (btnDsPause && dsVisControls && !dsVisControls.classList.contains('hidden')) {
+    if (paused) {
+      if (btnDsPause.innerText !== '▶ RESUME GAME') {
+        btnDsPause.innerHTML = '▶ RESUME GAME';
+        btnDsPause.style.borderColor = 'var(--neon-green)';
+        btnDsPause.style.color = 'var(--neon-green)';
+        btnDsPause.style.boxShadow = '0 0 10px rgba(57, 255, 20, 0.4)';
+        btnDsPause.style.textShadow = '0 0 5px var(--neon-green)';
+      }
+    } else {
+      if (btnDsPause.innerText !== '◼ PAUSE GAME') {
+        btnDsPause.innerHTML = '◼ PAUSE GAME';
+        btnDsPause.style.borderColor = 'var(--neon-red)';
+        btnDsPause.style.color = 'var(--neon-red)';
+        btnDsPause.style.boxShadow = '0 0 10px rgba(255, 34, 68, 0.4)';
+        btnDsPause.style.textShadow = '0 0 5px var(--neon-red)';
+      }
+    }
   }
 }
 
