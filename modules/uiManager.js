@@ -32,6 +32,11 @@ export class UIManager {
     this.invCountEl = document.getElementById('inv-count');
     this.invSlotsEl = document.getElementById('inv-slots');
 
+    // Status Bar elements
+    this.playerLevelEl  = document.getElementById('player-level');
+    this.xpBarFillEl    = document.getElementById('xp-bar-fill');
+    this.buffsContainerEl = document.getElementById('buffs-container');
+
     // Modals
     this.startModal    = document.getElementById('start-screen-modal');
     this.gameOverModal = document.getElementById('game-over-modal');
@@ -243,6 +248,50 @@ export class UIManager {
     });
   }
 
+  /* ── Status Bar Update (XP & Buffs) ─────────────────────── */
+  updateStatusBar() {
+    if (!this.playerLevelEl || !this.xpBarFillEl || !this.buffsContainerEl) return;
+
+    // Update XP
+    const lvl = this.state.get('player', 'level');
+    const xp = this.state.get('player', 'xp');
+    const xpToNext = this.state.get('player', 'xpToNext');
+    this.playerLevelEl.textContent = lvl;
+    const progress = Math.min(100, (xp / xpToNext) * 100);
+    this.xpBarFillEl.style.width = `${progress}%`;
+
+    // Update Buffs
+    let html = '';
+    
+    // Check speed
+    const speed = this.state.get('timers', 'speed');
+    if (speed > 0) {
+      html += `<div class="buff-indicator" style="color: #39ff14; background: rgba(57, 255, 20, 0.1); border: 1px solid #39ff14;">⚡ ${speed.toFixed(1)}s</div>`;
+    }
+
+    // Check star (invincible)
+    const star = this.state.get('timers', 'star');
+    if (star > 0) {
+      html += `<div class="buff-indicator" style="color: #fffacd; background: rgba(255, 250, 205, 0.1); border: 1px solid #fffacd;">⭐ ${star.toFixed(1)}s</div>`;
+    }
+
+    // Check gem (2x score)
+    const gem = this.state.get('timers', 'gem');
+    if (gem > 0) {
+      html += `<div class="buff-indicator" style="color: #00e5ff; background: rgba(0, 229, 255, 0.1); border: 1px solid #00e5ff;">💎 2x ${gem.toFixed(1)}s</div>`;
+    }
+
+    // Check shield
+    const shield = this.state.get('flags', 'hasShield');
+    if (shield) {
+      html += `<div class="buff-indicator" style="color: #ffd700; background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700;">🛡️ ACTIVE</div>`;
+    }
+
+    if (this.buffsContainerEl.innerHTML !== html) {
+      this.buffsContainerEl.innerHTML = html;
+    }
+  }
+
   /* ── HUD Frame Update ───────────────────────────────────── */
   updateHUD(fps, paused, player, enemyManager, puStack) {
     const isOver = this.state.get('flags', 'gameOver');
@@ -273,5 +322,7 @@ export class UIManager {
       const top = enemyManager.topPriorities;
       this.priorityEl.textContent = top.length > 0 ? top.join(', ') + 'px' : '—';
     }
+
+    this.updateStatusBar();
   }
 }

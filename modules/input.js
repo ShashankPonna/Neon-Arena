@@ -17,6 +17,8 @@ const ACTIVATE_KEYS = new Set(['e', 'E']);
 const DROP_KEYS     = new Set(['q', 'Q']);
 const TREE_KEYS     = new Set(['t', 'T']);
 const DS_VIS_KEYS   = new Set(['v', 'V']);
+const USE_HEALTH_KEYS = new Set(['1']);
+const USE_STAR_KEYS   = new Set(['2']);
 
 export class Input {
   constructor() {
@@ -37,6 +39,12 @@ export class Input {
 
     /** @type {(() => void) | null} */
     this._onDSVis = null;
+
+    /** @type {(() => void) | null} */
+    this._onUseHealth = null;
+
+    /** @type {(() => void) | null} */
+    this._onUseStar = null;
 
     window.addEventListener('keydown', (e) => {
       if (GAME_KEYS.has(e.key)) {
@@ -62,6 +70,14 @@ export class Input {
       if (DS_VIS_KEYS.has(e.key)) {
         e.preventDefault();
         if (this._onDSVis) this._onDSVis();
+      }
+      if (USE_HEALTH_KEYS.has(e.key)) {
+        e.preventDefault();
+        if (this._onUseHealth) this._onUseHealth();
+      }
+      if (USE_STAR_KEYS.has(e.key)) {
+        e.preventDefault();
+        if (this._onUseStar) this._onUseStar();
       }
     });
 
@@ -103,6 +119,16 @@ export class Input {
     this._onDSVis = fn;
   }
 
+  /** Register a callback fired once per 1 press (Health). */
+  onUseHealth(fn) {
+    this._onUseHealth = fn;
+  }
+
+  /** Register a callback fired once per 2 press (Star). */
+  onUseStar(fn) {
+    this._onUseStar = fn;
+  }
+
   /* ── Touch Controls Integration ────────────────────────── */
 
   /**
@@ -125,6 +151,8 @@ export class Input {
       case 'drop':     if (this._onDrop)        this._onDrop();        break;
       case 'tree':     if (this._onTreeToggle)  this._onTreeToggle();  break;
       case 'dsVis':    if (this._onDSVis)       this._onDSVis();       break;
+      case 'useHealth':if (this._onUseHealth)   this._onUseHealth();   break;
+      case 'useStar':  if (this._onUseStar)     this._onUseStar();     break;
     }
   }
 }

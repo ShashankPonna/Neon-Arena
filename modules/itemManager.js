@@ -106,6 +106,28 @@ export class ItemManager {
     }
   }
 
+  useHealthFromStock(activateFlashCallback) {
+    if (this.state.get('player', 'healthStock') > 0) {
+      if (this.state.get('player', 'hp') < this.state.get('player', 'maxHp')) {
+        this.state.add('player', 'healthStock', -1);
+        this.state.set('player', 'hp', Math.min(this.state.get('player', 'maxHp'), this.state.get('player', 'hp') + 1));
+        this.audio.playPowerup();
+        this.state.set('timers', 'activateFlash', 0.2);
+        if (activateFlashCallback) activateFlashCallback('#ff2244');
+      }
+    }
+  }
+
+  useStarFromStock(activateFlashCallback) {
+    if (this.state.get('player', 'starStock') > 0) {
+      this.state.add('player', 'starStock', -1);
+      this.state.set('timers', 'star', CONFIG.STAR_DUR);
+      this.audio.playPowerup();
+      this.state.set('timers', 'activateFlash', 0.2);
+      if (activateFlashCallback) activateFlashCallback('#fffacd');
+    }
+  }
+
   dropLastItem() {
     if (this.inventory.isEmpty) return;
     const item = this.inventory.removeLast();
@@ -150,11 +172,20 @@ export class ItemManager {
       const minD = pSize + item.size / 2 + 4 + magnet;
 
       if (dist < minD) {
-        if (this.inventory.size < CONFIG.MAX_INVENTORY) {
-          this.inventory.append(item);
-          this.uiManager.updateInventoryUI(this.inventory);
+        if (item.type === 'health') {
+          this.state.add('player', 'healthStock', 1);
+          // Audio cue could go here if item class doesn't do it independently
+          return false;
+        } else if (item.type === 'star') {
+          this.state.add('player', 'starStock', 1);
+          return false;
+        } else {
+          if (this.inventory.size < CONFIG.MAX_INVENTORY) {
+            this.inventory.append(item);
+            this.uiManager.updateInventoryUI(this.inventory);
+          }
+          return false;
         }
-        return false;
       }
       return true;
     });

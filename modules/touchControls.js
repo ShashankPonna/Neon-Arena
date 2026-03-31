@@ -70,8 +70,28 @@ export class TouchControls {
 
     this.container.appendChild(actions);
 
+    // ── Movement Area Wrapper (holds controller + quick buttons) ──
+    this.movementContainer = document.createElement('div');
+    this.movementContainer.className = 'movement-wrapper';
+
+    // Heart Button (Top Right of Controller)
+    this.btnHealth = document.createElement('button');
+    this.btnHealth.className = 'quick-btn act-health';
+    this.btnHealth.innerHTML = `♥ <span class="quick-badge" id="badge-health">0</span>`;
+    this._bindAction(this.btnHealth, 'useHealth');
+    this.movementContainer.appendChild(this.btnHealth);
+
+    // Star Button (Top Left of Controller)
+    this.btnStar = document.createElement('button');
+    this.btnStar.className = 'quick-btn act-star';
+    this.btnStar.innerHTML = `⭐ <span class="quick-badge" id="badge-star">0</span>`;
+    this._bindAction(this.btnStar, 'useStar');
+    this.movementContainer.appendChild(this.btnStar);
+
     // Render the active movement control
     this.setControlMode(this.controlMode);
+
+    this.container.appendChild(this.movementContainer);
 
     // Insert into game-wrapper so controls flow in the layout
     const wrapper = document.getElementById('game-wrapper');
@@ -103,7 +123,9 @@ export class TouchControls {
     } else {
       this.movementEl = this._buildJoystickDOM();
     }
-    this.container.appendChild(this.movementEl);
+    
+    // Append the movement element behind the quick buttons in the wrapper
+    this.movementContainer.appendChild(this.movementEl);
   }
 
   _buildDPad() {
@@ -283,6 +305,21 @@ export class TouchControls {
       this.container.classList.remove('visible');
       this.visible = false;
       document.body.classList.remove('has-touch-controls');
+    }
+  }
+
+  updateStockBadges(healthCount, starCount) {
+    if (this.btnHealth) {
+      const b = this.btnHealth.querySelector('.quick-badge');
+      if (b) b.textContent = healthCount;
+      if (healthCount > 0) this.btnHealth.classList.add('has-stock');
+      else this.btnHealth.classList.remove('has-stock');
+    }
+    if (this.btnStar) {
+      const b = this.btnStar.querySelector('.quick-badge');
+      if (b) b.textContent = starCount;
+      if (starCount > 0) this.btnStar.classList.add('has-stock');
+      else this.btnStar.classList.remove('has-stock');
     }
   }
 }

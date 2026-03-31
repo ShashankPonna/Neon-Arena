@@ -98,6 +98,16 @@ function init() {
     dsVis.toggle();
   });
 
+  input.onUseHealth(() => {
+    if (state.get('flags', 'gameOver') || loop.paused) return;
+    itemManager.useHealthFromStock(flashCb);
+  });
+
+  input.onUseStar(() => {
+    if (state.get('flags', 'gameOver') || loop.paused) return;
+    itemManager.useStarFromStock(flashCb);
+  });
+
   window.addEventListener('keydown', (e) => {
     if (e.key === 'r' || e.key === 'R') {
       if (state.get('flags', 'gameOver')) restart();
@@ -279,9 +289,24 @@ function update(dt) {
     }
   }
 
-  // Scoring
-  state.add('player', 'rawScore', dt * state.get('skills', 'scoreMultiplier'));
+  // Scoring & XP
+  const addedScore = dt * state.get('skills', 'scoreMultiplier');
+  state.add('player', 'rawScore', addedScore);
   state.set('player', 'score', Math.floor(state.get('player', 'rawScore')));
+  
+  // XP Gain
+  state.add('player', 'xp', addedScore);
+  
+  // Level Up Check
+  if (state.get('player', 'xp') >= state.get('player', 'xpToNext')) {
+    state.add('player', 'level', 1);
+    // Carry over remaining XP
+    state.set('player', 'xp', state.get('player', 'xp') - state.get('player', 'xpToNext'));
+    // Scale next level requirement
+    state.set('player', 'xpToNext', state.get('player', 'xpToNext') * 1.5);
+    // Optional: play a level up sound or effect, since audio manager is here
+    if (audio.playSkillUnlock) audio.playSkillUnlock(); // reuse sound for level up
+  }
 }
 
 function processHits(hits) {
@@ -390,6 +415,12 @@ function render(dt) {
 
 function onFrame(fps, paused) {
   ui.updateHUD(fps, paused, player, enemyManager, itemManager.puStack);
+  if (touchCtrl && touchCtrl.visible) {
+    touchCtrl.updateStockBadges(
+      state.get('player', 'healthStock'),
+      state.get('player', 'starStock')
+    );
+  }
 }
 
 // Kickoff

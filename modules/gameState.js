@@ -25,6 +25,11 @@ export class GameState {
         accelMultiplier: 1.0,
         magnetRadius:    0,
         coinValue:       5,
+        level:           1,
+        xp:              0,
+        xpToNext:        100,
+        healthStock:     0,
+        starStock:       0,
       },
       enemy: {
         count:           0,
