@@ -120,23 +120,33 @@ function init() {
   const btnToggleCtrl = document.getElementById('btn-toggle-controls');
 
   if (btnSettings && modalSettings) {
-    btnSettings.addEventListener('click', () => {
-      if (state.get('flags', 'gameOver')) return;
+    const fireSettings = (e) => {
+      e.preventDefault();
+      if (state.get('flags', 'gameOver') || !state.get('flags', 'gameStarted')) return;
+      if (!modalSettings.classList.contains('hidden')) return; // already open
       if (!loop.paused) loop.togglePause();
       modalSettings.classList.remove('hidden');
-    });
+    };
+    btnSettings.addEventListener('touchstart', fireSettings, {passive: false});
+    btnSettings.addEventListener('mousedown', fireSettings);
 
-    btnResume.addEventListener('click', () => {
+    const fireResume = (e) => {
+      e.preventDefault();
       modalSettings.classList.add('hidden');
-      if (loop.paused) loop.togglePause();
-    });
+      if (loop.paused && !state.get('flags', 'gameOver')) loop.togglePause();
+    };
+    btnResume.addEventListener('touchstart', fireResume, {passive: false});
+    btnResume.addEventListener('mousedown', fireResume);
 
-    btnToggleCtrl.addEventListener('click', () => {
+    const fireToggle = (e) => {
+      e.preventDefault();
       const isJoystick = touchCtrl.controlMode === 'joystick';
       const newMode = isJoystick ? 'dpad' : 'joystick';
       touchCtrl.setControlMode(newMode);
       btnToggleCtrl.textContent = `Movement: ${newMode === 'joystick' ? 'Joystick' : 'D-Pad'}`;
-    });
+    };
+    btnToggleCtrl.addEventListener('touchstart', fireToggle, {passive: false});
+    btnToggleCtrl.addEventListener('mousedown', fireToggle);
   }
 
   // Start logic loop (paused by default via gameStarted flag)
