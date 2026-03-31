@@ -113,6 +113,32 @@ function init() {
   // Touch controls (auto-detects touch devices)
   touchCtrl = new TouchControls(input);
 
+  // ── Settings & Controls Toggle Binding ──
+  const btnSettings = document.getElementById('btn-settings');
+  const modalSettings = document.getElementById('settings-modal');
+  const btnResume = document.getElementById('btn-resume-game');
+  const btnToggleCtrl = document.getElementById('btn-toggle-controls');
+
+  if (btnSettings && modalSettings) {
+    btnSettings.addEventListener('click', () => {
+      if (state.get('flags', 'gameOver')) return;
+      if (!loop.paused) loop.togglePause();
+      modalSettings.classList.remove('hidden');
+    });
+
+    btnResume.addEventListener('click', () => {
+      modalSettings.classList.add('hidden');
+      if (loop.paused) loop.togglePause();
+    });
+
+    btnToggleCtrl.addEventListener('click', () => {
+      const isJoystick = touchCtrl.controlMode === 'joystick';
+      const newMode = isJoystick ? 'dpad' : 'joystick';
+      touchCtrl.setControlMode(newMode);
+      btnToggleCtrl.textContent = `Movement: ${newMode === 'joystick' ? 'Joystick' : 'D-Pad'}`;
+    });
+  }
+
   // Start logic loop (paused by default via gameStarted flag)
   loop.start();
 }

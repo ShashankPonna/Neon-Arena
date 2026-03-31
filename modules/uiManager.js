@@ -88,6 +88,8 @@ export class UIManager {
     if (this.startModal) this.startModal.classList.add('hidden');
     if (this.gameOverModal) this.gameOverModal.classList.add('hidden');
     if (this.stModal) this.stModal.classList.add('hidden');
+    const settingsModal = document.getElementById('settings-modal');
+    if (settingsModal) settingsModal.classList.add('hidden');
   }
 
   showGameOver(score, survivalTime) {
