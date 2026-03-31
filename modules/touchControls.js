@@ -52,18 +52,18 @@ export class TouchControls {
     actions.className = 'action-group';
 
     const actionDefs = [
-      { action: 'activate', label: 'Use',     cls: 'act-e',     color: '#39ff14' },
-      { action: 'drop',     label: 'Drop',    cls: 'act-q',     color: '#ff6b35' },
-      { action: 'tree',     label: 'Skills',  cls: 'act-t',     color: '#00f0ff' },
-      { action: 'dsVis',    label: 'Data',    cls: 'act-v',     color: '#b14eff' },
+      { action: 'activate', icon: '⚡', label: 'Activate', cls: 'act-e',  color: '#39ff14' },
+      { action: 'drop',     icon: '↩️', label: 'Discard',  cls: 'act-q',  color: '#ff6b35' },
+      { action: 'tree',     icon: '⬆️', label: 'Upgrade',  cls: 'act-t',  color: '#00f0ff' },
+      { action: 'dsVis',    icon: '📊', label: 'Analyze',  cls: 'act-v',  color: '#b14eff' },
     ];
 
     for (const a of actionDefs) {
       const btn = document.createElement('button');
       btn.className = `action-btn ${a.cls}`;
-      btn.textContent = a.label;
+      btn.innerHTML = `<span class="act-icon">${a.icon}</span><span class="act-label">${a.label}</span>`;
       btn.style.setProperty('--btn-color', a.color);
-      btn.setAttribute('aria-label', a.action);
+      btn.setAttribute('aria-label', a.label);
       this._bindAction(btn, a.action);
       actions.appendChild(btn);
     }

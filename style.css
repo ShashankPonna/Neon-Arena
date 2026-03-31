@@ -1266,6 +1266,20 @@ body {
   transform: scale(0.88);
 }
 
+.act-icon {
+  font-size: 1.1em;
+  line-height: 1;
+  filter: saturate(1.4);
+}
+
+.act-label {
+  font-family: var(--font-display);
+  font-size: 0.75em;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
 .act-pause {
   font-size: 18px;
 }
@@ -1485,15 +1499,22 @@ body {
 
   .action-btn {
     width: auto;
-    height: 48px;
-    padding: 0 12px;
-    border-radius: 8px;
-    /* Flat modern rectangles instead of circles */
-    font-size: 14px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-size: 13px;
     letter-spacing: 0.5px;
-    flex: 1 1 calc(33.33% - 8px);
-    /* Make buttons stretch evenly into a 3-column / 2-column grid */
+    flex: 1 1 calc(50% - 8px);
     white-space: nowrap;
+    gap: 6px;
+  }
+
+  .act-icon {
+    font-size: 1.2em;
+  }
+
+  .act-label {
+    font-size: 0.8em;
   }
 
   /* Scale down overlay screens for mobile */
