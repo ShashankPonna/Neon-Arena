@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    touchControls.js — On-Screen Mobile Controls
-   Creates a D-pad and action buttons for mobile play.
+   Creates a floating joystick and action buttons for mobile play.
    Hooks directly into the Input system's key state.
    Visible on touch devices OR small viewports (≤ 850px).
    ═══════════════════════════════════════════════════════════ */
@@ -121,7 +121,7 @@ export class TouchControls {
     if (mode === 'dpad') {
       this.movementEl = this._buildDPad();
     } else {
-      this.movementEl = this._buildJoystickDOM();
+      this.movementEl = this._buildFloatingJoystick();
     }
     
     // Append the movement element behind the quick buttons in the wrapper
@@ -164,27 +164,42 @@ export class TouchControls {
     return dpad;
   }
 
-  _buildJoystickDOM() {
+  /** Build the floating joystick — a transparent touch zone with on-demand joystick */
+  _buildFloatingJoystick() {
+    // The touch zone fills the movement area
+    const zone = document.createElement('div');
+    zone.className = 'joystick-zone';
+
+    // Joystick base (hidden by default, appears on touch)
     const base = document.createElement('div');
-    base.className = 'joystick-base';
+    base.className = 'joystick-base floating';
+    
+    // Knob
     const knob = document.createElement('div');
     knob.className = 'joystick-knob';
     base.appendChild(knob);
-    this._bindJoystick(base, knob);
-    return base;
+
+    zone.appendChild(base);
+
+    // Bind floating joystick logic
+    this._bindFloatingJoystick(zone, base, knob);
+
+    return zone;
   }
 
-  /** Bind touch events for analog joystick */
-  _bindJoystick(base, knob) {
+  /** Bind touch events for the floating joystick */
+  _bindFloatingJoystick(zone, base, knob) {
     let active = false;
     let touchId = null;
     let originX = 0;
     let originY = 0;
-    let maxRadius = 50; // Decided dynamically
+    const maxRadius = 60; // How far the knob can travel from origin
+    const baseSize = 140; // Visual size of the joystick base
 
     const reset = () => {
       active = false;
       touchId = null;
+      base.classList.remove('active');
       knob.style.transform = `translate(-50%, -50%)`;
       this.input.setKey('ArrowUp', false);
       this.input.setKey('ArrowDown', false);
@@ -192,15 +207,22 @@ export class TouchControls {
       this.input.setKey('ArrowRight', false);
     };
 
-    const handleStart = (clientX, clientY) => {
-      if (active) return;
-      active = true;
-      const rect = base.getBoundingClientRect();
-      originX = rect.left + rect.width / 2;
-      originY = rect.top + rect.height / 2;
-      maxRadius = (rect.width / 2) - 10; // keep knob somewhat inside
+    const placeJoystick = (clientX, clientY) => {
+      // Convert touch point to position relative to the zone
+      const zoneRect = zone.getBoundingClientRect();
+      const localX = clientX - zoneRect.left;
+      const localY = clientY - zoneRect.top;
 
-      updateKnob(clientX, clientY);
+      // Position the base centered on the touch point
+      base.style.left = `${localX}px`;
+      base.style.top = `${localY}px`;
+
+      // Store origin in screen coordinates for knob tracking
+      originX = clientX;
+      originY = clientY;
+
+      // Show the joystick with animation
+      base.classList.add('active');
     };
 
     const updateKnob = (clientX, clientY) => {
@@ -217,24 +239,26 @@ export class TouchControls {
       knob.style.transform = `translate(calc(-50% + ${knobX}px), calc(-50% + ${knobY}px))`;
 
       // Map to discrete 8-way inputs
-      const deadzone = 15; // Requires dragging slightly out of center
+      const deadzone = 15;
       this.input.setKey('ArrowUp',    distance > deadzone && dy < -deadzone);
       this.input.setKey('ArrowDown',  distance > deadzone && dy > deadzone);
       this.input.setKey('ArrowLeft',  distance > deadzone && dx < -deadzone);
       this.input.setKey('ArrowRight', distance > deadzone && dx > deadzone);
     };
 
-    // Touch events
-    base.addEventListener('touchstart', (e) => {
+    // Touch events on the zone
+    zone.addEventListener('touchstart', (e) => {
       e.preventDefault();
       if (!active) {
         const t = e.changedTouches[0];
         touchId = t.identifier;
-        handleStart(t.clientX, t.clientY);
+        active = true;
+        placeJoystick(t.clientX, t.clientY);
+        updateKnob(t.clientX, t.clientY);
       }
     }, { passive: false });
 
-    base.addEventListener('touchmove', (e) => {
+    zone.addEventListener('touchmove', (e) => {
       e.preventDefault();
       if (active) {
         for (let i = 0; i < e.changedTouches.length; i++) {
@@ -258,15 +282,17 @@ export class TouchControls {
       }
     };
 
-    base.addEventListener('touchend', handleEnd, { passive: false });
-    base.addEventListener('touchcancel', handleEnd, { passive: false });
+    zone.addEventListener('touchend', handleEnd, { passive: false });
+    zone.addEventListener('touchcancel', handleEnd, { passive: false });
 
     // Mouse fallback for desktop testing
     let mouseActive = false;
-    base.addEventListener('mousedown', (e) => {
+    zone.addEventListener('mousedown', (e) => {
       e.preventDefault();
       mouseActive = true;
-      handleStart(e.clientX, e.clientY);
+      active = true;
+      placeJoystick(e.clientX, e.clientY);
+      updateKnob(e.clientX, e.clientY);
     });
     window.addEventListener('mousemove', (e) => {
       if (mouseActive) updateKnob(e.clientX, e.clientY);
@@ -323,4 +349,3 @@ export class TouchControls {
     }
   }
 }
-

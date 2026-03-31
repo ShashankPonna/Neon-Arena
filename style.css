@@ -1088,9 +1088,19 @@ body {
   color: #000;
 }
 
+/* ── Floating Joystick Touch Zone ─────────────────────── */
+.joystick-zone {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
 /* ── Analog Joystick ──────────────────────────────────── */
 .joystick-base {
-  position: relative;
+  position: absolute;
   width: 140px;
   height: 140px;
   flex-shrink: 0;
@@ -1103,12 +1113,25 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Floating variant: hidden until touched */
+.joystick-base.floating {
+  transform: translate(-50%, -50%) scale(0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease-out, transform 0.12s ease-out;
+}
+
+/* Visible when actively touched */
+.joystick-base.floating.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
 .joystick-knob {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* Base transform updated by JS */
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -1116,9 +1139,7 @@ body {
   border: 2px solid rgba(0, 240, 255, 0.8);
   box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
   pointer-events: none;
-  /* Let touches pass to the base */
   transition: transform 0.05s linear;
-  /* Smooth visual tracking */
 }
 
 /* ── D-Pad ────────────────────────────────────────────── */
@@ -1394,30 +1415,36 @@ body {
     border-radius: 4px;
   }
 
-  /* Movement wrapper: center it in the remaining space and
-     act as the positioning context for star/heart buttons */
+  /* Movement wrapper: fills remaining space as the floating joystick touch zone */
   .movement-wrapper {
-    width: 240px;
-    height: 240px;
+    width: 100%;
+    height: auto;
     flex: 1 1 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     align-self: center;
-    /* horizontal center in the column */
     position: relative;
   }
 
+  /* Floating joystick zone fills the wrapper */
+  .joystick-zone {
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    border: 1px dashed rgba(0, 240, 255, 0.08);
+    border-radius: 12px;
+  }
+
+  /* Floating joystick base size on mobile */
   .joystick-base {
-    width: 240px;
-    height: 240px;
-    flex-shrink: 0;
-    margin: 0;
+    width: 140px;
+    height: 140px;
   }
 
   .joystick-knob {
-    width: 80px;
-    height: 80px;
+    width: 56px;
+    height: 56px;
   }
 
   .dpad {
@@ -1433,15 +1460,15 @@ body {
     font-size: 30px;
   }
 
-  /* Star and Heart buttons anchored to controller corners */
+  /* Star and Heart buttons anchored to wrapper top corners */
   .quick-btn.act-star {
-    top: 10px;
-    left: -30px;
+    top: 5px;
+    left: 5px;
   }
 
   .quick-btn.act-health {
-    top: 10px;
-    right: -30px;
+    top: 5px;
+    right: 5px;
     left: auto;
   }
 
