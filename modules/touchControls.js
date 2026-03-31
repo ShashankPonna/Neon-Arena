@@ -77,11 +77,11 @@ export class TouchControls {
     actions.className = 'action-group';
 
     const actionDefs = [
-      { action: 'activate', label: 'E',     cls: 'act-e',     color: '#39ff14' },
-      { action: 'drop',     label: 'Q',     cls: 'act-q',     color: '#ff6b35' },
-      { action: 'tree',     label: 'T',     cls: 'act-t',     color: '#00f0ff' },
-      { action: 'dsVis',    label: 'V',     cls: 'act-v',     color: '#b14eff' },
-      { action: 'pause',    label: '⏸',    cls: 'act-pause', color: '#ff2244' },
+      { action: 'activate', label: 'Use',     cls: 'act-e',     color: '#39ff14' },
+      { action: 'drop',     label: 'Drop',    cls: 'act-q',     color: '#ff6b35' },
+      { action: 'tree',     label: 'Skills',  cls: 'act-t',     color: '#00f0ff' },
+      { action: 'dsVis',    label: 'Data',    cls: 'act-v',     color: '#b14eff' },
+      { action: 'pause',    label: 'Pause',   cls: 'act-pause', color: '#ff2244' },
     ];
 
     for (const a of actionDefs) {

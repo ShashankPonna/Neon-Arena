@@ -1044,7 +1044,7 @@ html, body {
     min-height: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Move canvas to top, below nav bar */
   }
 
   #canvas-clip {
@@ -1074,28 +1074,46 @@ html, body {
     padding: 0 1px;
   }
 
-  /* Touch controls now in flow, no padding needed */
+  /* Touch controls taking up half the screen */
   .touch-controls {
-    padding: 6px 10px;
+    flex: 0 0 50dvh;
+    padding: 10px 12px;
+    align-items: stretch; /* Stretch children to full width */
+    flex-direction: column-reverse; /* Action buttons on top, D-pad on bottom */
+    justify-content: flex-end; /* In column-reverse, flex-end pushes items to the TOP (right beneath inventory) */
+    width: 100%;
+    box-sizing: border-box;
     border-radius: 4px;
+    gap: 20px; /* Space between action buttons and D-пад */
   }
 
   .dpad {
-    width: 120px;
-    height: 120px;
+    width: 240px;
+    height: 240px;
+    flex-shrink: 0;
+    align-self: center; /* Keep the D-pad firmly in the middle */
   }
   .dpad-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 15px;
+    width: 76px;
+    height: 76px;
+    font-size: 30px;
   }
-  .action-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 13px;
-  }
+  
   .action-group {
     gap: 8px;
+    max-width: 100%; /* Use all available width */
+    justify-content: center;
+  }
+  
+  .action-btn {
+    width: auto;
+    height: 48px;
+    padding: 0 12px;
+    border-radius: 8px; /* Flat modern rectangles instead of circles */
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    flex: 1 1 calc(33.33% - 8px); /* Make buttons stretch evenly into a 3-column / 2-column grid */
+    white-space: nowrap;
   }
 
   /* Scale down overlay screens for mobile */
