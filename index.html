@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ADS Game — Neon Arena</title>
   <meta name="description" content="A 2D neon-themed browser game with BFS pathfinding, built with the Canvas API." />
   <link rel="stylesheet" href="style.css" />
@@ -26,7 +26,45 @@
     </header>
 
     <div id="canvas-area">
-      <canvas id="game-canvas"></canvas>
+      <div id="canvas-clip">
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Overlay Screens (inside clip so they match canvas size) -->
+        <div id="start-screen-modal" class="ui-screen">
+          <div class="screen-content">
+            <h1 class="hero-title">NEON <span class="accent">ARENA</span></h1>
+            <p class="hero-subtitle">Survive the geometrical onslaught.</p>
+            <div class="pulse-text" id="btn-start-game">TAP OR PRESS ENTER TO START</div>
+          </div>
+        </div>
+
+        <div id="game-over-modal" class="ui-screen hidden">
+          <div class="screen-content">
+            <h1 class="hero-title hero-error">SYSTEM FAILURE</h1>
+            <div class="stats-box">
+              <div class="stat-row">FINAL SCORE: <span id="go-score" class="accent">0</span></div>
+              <div class="stat-row">SURVIVED: <span id="go-time">0</span>s</div>
+            </div>
+            <div class="pulse-text" id="btn-restart-game">TAP OR PRESS R TO REBOOT</div>
+          </div>
+        </div>
+
+        <!-- Skill Tree Modal -->
+        <div id="skill-tree-modal" class="hidden">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>UPGRADE SYSTEM</h2>
+              <div class="modal-score">SCORE: <span id="st-current-score">0</span></div>
+              <span class="modal-close" id="btn-close-skills">×</span>
+            </div>
+            <div class="modal-subtitle">Click nodes to unlock. Parent nodes must be unlocked first.</div>
+            <div id="tree-container" class="tree-container">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
       <aside id="debug-panel">
         <h2 class="debug-title">DEBUG</h2>
         <div class="debug-row">
@@ -60,41 +98,6 @@
         </div>
         <button id="btn-show-path" class="btn-toggle">◻ Show Path</button>
       </aside>
-
-      <!-- Overlay Screens -->
-      <div id="start-screen-modal" class="ui-screen">
-        <div class="screen-content">
-          <h1 class="hero-title">NEON <span class="accent">ARENA</span></h1>
-          <p class="hero-subtitle">Survive the geometrical onslaught.</p>
-          <div class="pulse-text" id="btn-start-game">PRESS ENTER TO START</div>
-        </div>
-      </div>
-
-      <div id="game-over-modal" class="ui-screen hidden">
-        <div class="screen-content">
-          <h1 class="hero-title hero-error">SYSTEM FAILURE</h1>
-          <div class="stats-box">
-            <div class="stat-row">FINAL SCORE: <span id="go-score" class="accent">0</span></div>
-            <div class="stat-row">SURVIVED: <span id="go-time">0</span>s</div>
-          </div>
-          <div class="pulse-text" id="btn-restart-game">PRESS R TO REBOOT</div>
-        </div>
-      </div>
-
-      <!-- Skill Tree Modal -->
-      <div id="skill-tree-modal" class="hidden">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>UPGRADE SYSTEM</h2>
-            <div class="modal-score">SCORE: <span id="st-current-score">0</span></div>
-            <span class="modal-close" id="btn-close-skills">×</span>
-          </div>
-          <div class="modal-subtitle">Click nodes to unlock. Parent nodes must be unlocked first.</div>
-          <div id="tree-container" class="tree-container">
-            <!-- Dynamically populated via JS -->
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Inventory Panel (Linked List) -->
@@ -111,7 +114,7 @@
     </div>
 
     <footer id="controls-hint">
-      <span>▲ ▼ ◀ ▶ Move &nbsp;&nbsp; E Power-Up &nbsp;&nbsp; Q Drop Item &nbsp;&nbsp; T Skill Tree &nbsp;&nbsp; ESC/P Pause &nbsp;&nbsp; R Restart</span>
+      <span>▲ ▼ ◀ ▶ Move &nbsp;&nbsp; E Power-Up &nbsp;&nbsp; Q Drop Item &nbsp;&nbsp; T Skill Tree &nbsp;&nbsp; V DS Viz &nbsp;&nbsp; ESC/P Pause &nbsp;&nbsp; R Restart</span>
     </footer>
   </div>
 

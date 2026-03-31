@@ -16,6 +16,7 @@ const PAUSE_KEYS    = new Set(['Escape', 'p', 'P']);
 const ACTIVATE_KEYS = new Set(['e', 'E']);
 const DROP_KEYS     = new Set(['q', 'Q']);
 const TREE_KEYS     = new Set(['t', 'T']);
+const DS_VIS_KEYS   = new Set(['v', 'V']);
 
 export class Input {
   constructor() {
@@ -33,6 +34,9 @@ export class Input {
 
     /** @type {(() => void) | null} */
     this._onTreeToggle = null;
+
+    /** @type {(() => void) | null} */
+    this._onDSVis = null;
 
     window.addEventListener('keydown', (e) => {
       if (GAME_KEYS.has(e.key)) {
@@ -54,6 +58,10 @@ export class Input {
       if (TREE_KEYS.has(e.key)) {
         e.preventDefault();
         if (this._onTreeToggle) this._onTreeToggle();
+      }
+      if (DS_VIS_KEYS.has(e.key)) {
+        e.preventDefault();
+        if (this._onDSVis) this._onDSVis();
       }
     });
 
@@ -88,5 +96,35 @@ export class Input {
   /** Register a callback fired once per T press (toggle skill tree). */
   onTreeToggle(fn) {
     this._onTreeToggle = fn;
+  }
+
+  /** Register a callback fired once per V press (DS visualization). */
+  onDSVis(fn) {
+    this._onDSVis = fn;
+  }
+
+  /* ── Touch Controls Integration ────────────────────────── */
+
+  /**
+   * Directly set a key state (used by TouchControls for D-pad holds).
+   * @param {string} key — key name matching GAME_KEYS (e.g. 'ArrowUp')
+   * @param {boolean} pressed
+   */
+  setKey(key, pressed) {
+    this.keys[key] = pressed;
+  }
+
+  /**
+   * Fire a one-shot action (used by TouchControls for action buttons).
+   * @param {'pause'|'activate'|'drop'|'tree'|'dsVis'} action
+   */
+  fireAction(action) {
+    switch (action) {
+      case 'pause':    if (this._onPauseToggle) this._onPauseToggle(); break;
+      case 'activate': if (this._onActivate)    this._onActivate();    break;
+      case 'drop':     if (this._onDrop)        this._onDrop();        break;
+      case 'tree':     if (this._onTreeToggle)  this._onTreeToggle();  break;
+      case 'dsVis':    if (this._onDSVis)       this._onDSVis();       break;
+    }
   }
 }

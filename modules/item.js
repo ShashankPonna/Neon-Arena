@@ -59,6 +59,7 @@ export class Item {
     this.size  = 16;
     this.age   = 0;
     this.alive = true;
+    this.dropCooldown = 0;
 
     const def     = ITEM_DEFS[type];
     this.color    = def.color;
@@ -70,6 +71,9 @@ export class Item {
   /** Advance age for animations. */
   update(dt) {
     this.age += dt;
+    if (this.dropCooldown > 0) {
+      this.dropCooldown -= dt;
+    }
   }
 
   /** Pick a random item type. */
