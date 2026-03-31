@@ -23,6 +23,7 @@ import { buildSkillTree} from './modules/skillSystem.js';
 import { DSVisualizer }  from './modules/dsVisualizer.js';
 import { CanvasScaler }  from './modules/canvasScaler.js';
 import { TouchControls } from './modules/touchControls.js';
+import { LeaderboardManager } from './modules/leaderboard.js';
 
 // ── Globals & Managers Setup ─────────────────────────────
 const state        = new GameState();
@@ -108,6 +109,23 @@ function init() {
     itemManager.useStarFromStock(flashCb);
   });
 
+  // Desktop quick action buttons
+  const btnDesktopStar = document.getElementById('btn-desktop-star');
+  if (btnDesktopStar) {
+    btnDesktopStar.addEventListener('click', () => {
+      if (state.get('flags', 'gameOver') || loop.paused) return;
+      itemManager.useStarFromStock(flashCb);
+    });
+  }
+
+  const btnDesktopHealth = document.getElementById('btn-desktop-health');
+  if (btnDesktopHealth) {
+    btnDesktopHealth.addEventListener('click', () => {
+      if (state.get('flags', 'gameOver') || loop.paused) return;
+      itemManager.useHealthFromStock(flashCb);
+    });
+  }
+
   window.addEventListener('keydown', (e) => {
     if (e.key === 'r' || e.key === 'R') {
       if (state.get('flags', 'gameOver')) restart();
@@ -188,6 +206,7 @@ function initSkillTree() {
 
 // ── Game Flow Regulators ──────────────────────────────────
 function startGame() {
+  ui.savePlayerName();
   audio.init();
   audio.playStart();
   state.set('flags', 'gameStarted', true);
@@ -325,7 +344,18 @@ function processHits(hits) {
     if (state.get('player', 'hp') <= 0) {
       state.set('flags', 'gameOver', true);
       audio.playGameOver();
-      ui.showGameOver(state.get('player', 'score'), survivalTime);
+      
+      const pName = ui.getPlayerName();
+      const finalScore = state.get('player', 'score');
+      const finalTime = survivalTime;
+      
+      ui.showGameOver(finalScore, finalTime);
+      
+      if (pName) {
+        LeaderboardManager.submitScore(pName, finalTime, finalScore).then(() => {
+          ui.refreshLeaderboard();
+        });
+      }
     } else {
       audio.playDamage();
     }

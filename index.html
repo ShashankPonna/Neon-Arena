@@ -34,7 +34,27 @@
           <div class="screen-content">
             <h1 class="hero-title">NEON <span class="accent">ARENA</span></h1>
             <p class="hero-subtitle">Survive the geometrical onslaught.</p>
+            
+            <div class="player-entry">
+              <input type="text" id="player-name-input" placeholder="ENTER PLAYER NAME" maxlength="15" autocomplete="off" />
+            </div>
+
             <div class="pulse-text" id="btn-start-game">TAP OR PRESS ENTER TO START</div>
+
+            <div class="leaderboard-container">
+              <h3>GLOBAL LEADERBOARD</h3>
+              <div class="leaderboard-table">
+                <div class="lb-header">
+                  <span>#</span>
+                  <span>NAME</span>
+                  <span>TIME</span>
+                  <span>SCORE</span>
+                </div>
+                <div id="leaderboard-list">
+                  <div class="lb-loading">ESTABLISHING CONNECTION...</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -46,6 +66,7 @@
               <div class="stat-row">SURVIVED: <span id="go-time">0</span>s</div>
             </div>
             <div class="pulse-text" id="btn-restart-game">TAP OR PRESS R TO REBOOT</div>
+            <div class="pulse-text" id="btn-home-screen" style="margin-top: 15px; font-size: 1rem; color: var(--neon-cyan); text-shadow: var(--glow-cyan);">RETURN TO HOME</div>
           </div>
         </div>
 
@@ -117,6 +138,10 @@
     <div id="status-bar">
       <div id="buffs-container">
         <!-- Dynamically populated buffs -->
+      </div>
+      <div id="quick-actions-desktop">
+        <button id="btn-desktop-star" class="quick-btn-desktop" title="Use Star (Invincibility)">⭐ <span id="desktop-badge-star">0</span></button>
+        <button id="btn-desktop-health" class="quick-btn-desktop" title="Use Heart (Heal)">♥ <span id="desktop-badge-health">0</span></button>
       </div>
       <div id="xp-container">
         <span class="xp-level">LVL <span id="player-level">1</span></span>

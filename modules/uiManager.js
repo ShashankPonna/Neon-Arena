@@ -7,6 +7,7 @@
 import { ITEM_DEFS } from './item.js';
 import { audio } from './audio.js';
 import { CONFIG } from './config.js';
+import { LeaderboardManager } from './leaderboard.js';
 
 export class UIManager {
   constructor(state, input, restartCb, startGameCb, useItemCb, skillUnlockCb) {
@@ -51,7 +52,69 @@ export class UIManager {
     this.treeContainer = document.getElementById('tree-container');
     this.stCurrentScore = document.getElementById('st-current-score');
 
+    // New Leaderboard DOM elements
+    this.playerNameInput = document.getElementById('player-name-input');
+    this.leaderboardList = document.getElementById('leaderboard-list');
+
+    // Desktop Quick Actions
+    this.badgeStarEl   = document.getElementById('desktop-badge-star');
+    this.badgeHealthEl = document.getElementById('desktop-badge-health');
+
     this.bindEvents(input);
+
+    // Initial setups
+    this._loadPlayerName();
+    this.refreshLeaderboard();
+  }
+
+  _loadPlayerName() {
+    if (this.playerNameInput) {
+      const savedName = localStorage.getItem('playerName');
+      if (savedName) {
+        this.playerNameInput.value = savedName;
+      }
+    }
+  }
+
+  /* ── Leaderboard Handling ───────────────────────────────── */
+  async refreshLeaderboard() {
+    if (!this.leaderboardList) return;
+    this.leaderboardList.innerHTML = '<div class="lb-loading">FETCHING DATA...</div>';
+    
+    const scores = await LeaderboardManager.fetchTopScores(20);
+    
+    if (scores.length === 0) {
+      this.leaderboardList.innerHTML = '<div class="lb-loading">NO DATA SIGNAL DETECTED</div>';
+      return;
+    }
+
+    let html = '';
+    scores.forEach((sc, idx) => {
+      html += `
+        <div class="lb-row">
+          <span class="lb-rank">#${idx + 1}</span>
+          <span class="lb-name" title="${sc.name}">${sc.name}</span>
+          <span>${sc.survival_time.toFixed(1)}s</span>
+          <span>${sc.score}</span>
+        </div>
+      `;
+    });
+    this.leaderboardList.innerHTML = html;
+  }
+
+  savePlayerName() {
+    if (this.playerNameInput) {
+      let name = this.playerNameInput.value.trim().toUpperCase();
+      if (!name) name = 'ANON_' + Math.floor(Math.random() * 9999);
+      localStorage.setItem('playerName', name);
+      this.playerNameInput.value = name;
+      return name;
+    }
+    return '';
+  }
+
+  getPlayerName() {
+    return this.playerNameInput ? this.playerNameInput.value.trim().toUpperCase() : '';
   }
 
   /* ── Input Binding ──────────────────────────────────────── */
@@ -67,12 +130,26 @@ export class UIManager {
     }
 
     // Modal buttons
-    if (this.btnStart) this.btnStart.addEventListener('click', this.startGameCb);
+    if (this.btnStart) {
+      this.btnStart.addEventListener('click', () => {
+        this.savePlayerName();
+        this.startGameCb();
+      });
+    }
+    
     if (this.btnRestart) {
       this.btnRestart.addEventListener('click', () => {
         if (this.state.get('flags', 'gameOver')) this.restartCb();
       });
     }
+
+    const btnHome = document.getElementById('btn-home-screen');
+    if (btnHome) {
+      btnHome.addEventListener('click', () => {
+        location.reload();
+      });
+    }
+
     if (this.btnCloseTree) {
       this.btnCloseTree.addEventListener('click', () => {
         if (this.state.get('flags', 'showSkillTree')) this.toggleSkillTree();
@@ -87,6 +164,7 @@ export class UIManager {
   showStartScreen() {
     if (this.startModal) this.startModal.classList.remove('hidden');
     if (this.gameOverModal) this.gameOverModal.classList.add('hidden');
+    this.refreshLeaderboard();
   }
 
   hideModals() {
@@ -102,6 +180,7 @@ export class UIManager {
       if (this.goScoreEl) this.goScoreEl.textContent = score;
       if (this.goTimeEl)  this.goTimeEl.textContent  = Math.floor(survivalTime);
       this.gameOverModal.classList.remove('hidden');
+      this.refreshLeaderboard();
     }
   }
 
@@ -322,6 +401,9 @@ export class UIManager {
       const top = enemyManager.topPriorities;
       this.priorityEl.textContent = top.length > 0 ? top.join(', ') + 'px' : '—';
     }
+
+    if (this.badgeStarEl)   this.badgeStarEl.textContent   = this.state.get('player', 'starStock') || 0;
+    if (this.badgeHealthEl) this.badgeHealthEl.textContent = this.state.get('player', 'healthStock') || 0;
 
     this.updateStatusBar();
   }

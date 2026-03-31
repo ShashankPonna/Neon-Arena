@@ -796,6 +796,16 @@ body {
   animation: slideUpIn 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
 }
 
+#start-screen-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  background: radial-gradient(circle at center, rgba(10, 10, 20, 0.95), rgba(5, 5, 10, 1));
+  border-radius: 0;
+}
+
 .hero-title {
   font-family: var(--font-display);
   font-size: 4rem;
@@ -852,6 +862,48 @@ body {
   gap: 8px;
   flex: 1;
   min-height: 24px;
+}
+
+#quick-actions-desktop {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.quick-btn-desktop {
+  background: rgba(10, 10, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-btn-desktop:active {
+  transform: scale(0.95);
+}
+
+#btn-desktop-star { border-color: rgba(255, 250, 205, 0.3); color: #fffacd; }
+#btn-desktop-health { border-color: rgba(255, 107, 107, 0.3); color: #ff6b6b; }
+
+#btn-desktop-star:hover { background: rgba(255, 250, 205, 0.1); border-color: #fffacd; box-shadow: 0 0 8px rgba(255, 250, 205, 0.4); }
+#btn-desktop-health:hover { background: rgba(255, 107, 107, 0.1); border-color: #ff6b6b; box-shadow: 0 0 8px rgba(255, 107, 107, 0.4); }
+
+.quick-btn-desktop span {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 850px) {
+  #quick-actions-desktop {
+    display: none;
+  }
 }
 
 .buff-indicator {
@@ -981,6 +1033,140 @@ body {
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
+}
+
+/* ──────────────────────────────────────────────
+   Player Name Input & Leaderboard 
+   ────────────────────────────────────────────── */
+.player-entry {
+  margin: 15px 0;
+}
+
+#player-name-input {
+  background: rgba(10, 10, 20, 0.7);
+  border: 1px solid var(--neon-cyan);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  outline: none;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+  transition: all 0.3s;
+  width: 250px;
+  text-transform: uppercase;
+}
+
+#player-name-input:focus {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+  background: rgba(15, 15, 25, 0.9);
+}
+
+.leaderboard-container {
+  margin-top: 25px;
+  background: rgba(5, 5, 10, 0.6);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.leaderboard-container h3 {
+  font-family: var(--font-display);
+  color: var(--neon-cyan);
+  font-size: 1rem;
+  margin-bottom: 12px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: var(--glow-cyan);
+}
+
+.leaderboard-table {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+}
+
+.lb-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 60px 80px;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  text-align: left;
+}
+
+.lb-header span:last-child {
+  text-align: right;
+}
+
+#leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+#leaderboard-list::-webkit-scrollbar {
+  width: 4px;
+}
+#leaderboard-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+#leaderboard-list::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 2px;
+}
+
+.lb-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 60px 80px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.lb-row:hover {
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.lb-row span:last-child {
+  text-align: right;
+  color: var(--neon-green);
+}
+
+.lb-rank {
+  color: var(--neon-pink);
+  font-weight: 700;
+}
+
+.lb-name {
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 8px;
+}
+
+.lb-loading {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 20px 0;
+  animation: pulseNeon 2s infinite;
 }
 
 /* ── Touch Controls ───────────────────────────────────── */
